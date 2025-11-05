@@ -331,6 +331,20 @@ export function parseScreenplay(
 
 /**
  * Determines if a line is a scene heading.
+ * 
+ * Scene headings in screenplays start with INT., EXT., INT./EXT., or I/E
+ * followed by a location and time of day.
+ *
+ * @param line - The line to test
+ * @param strictMode - If true, applies additional validation rules
+ * @returns True if the line appears to be a scene heading
+ *
+ * @example
+ * ```typescript
+ * isSceneHeading('INT. COFFEE SHOP - DAY', false) // true
+ * isSceneHeading('EXT. PARK - NIGHT', false)      // true
+ * isSceneHeading('This is just action', false)    // false
+ * ```
  */
 function isSceneHeading(line: string, strictMode: boolean): boolean {
   // Must start with a scene prefix
@@ -358,6 +372,21 @@ function isSceneHeading(line: string, strictMode: boolean): boolean {
 
 /**
  * Determines if a line is a character name.
+ * 
+ * Character names in screenplays are typically in ALL CAPS, relatively short,
+ * and appear before dialogue. This function uses both pattern matching and context.
+ *
+ * @param line - The line to test
+ * @param state - Current parser state for context-aware detection
+ * @param strictMode - If true, applies additional validation rules
+ * @returns True if the line appears to be a character name
+ *
+ * @example
+ * ```typescript
+ * isCharacterName('JOHN', state, false)           // true
+ * isCharacterName('JANE (V.O.)', state, false)    // true
+ * isCharacterName('John walked into the room', state, false) // false
+ * ```
  */
 function isCharacterName(line: string, state: ParserState, strictMode: boolean): boolean {
   // Must be all uppercase (with possible spaces, hyphens, apostrophes, numbers)
@@ -424,6 +453,21 @@ function isCharacterName(line: string, state: ParserState, strictMode: boolean):
 
 /**
  * Determines if a line is a transition.
+ * 
+ * Transitions in screenplays are typically uppercase, all on one line, and often
+ * end with "TO:" (e.g., "CUT TO:", "DISSOLVE TO:", "FADE TO BLACK:").
+ *
+ * @param line - The line to test
+ * @param strictMode - If true, applies stricter validation rules
+ * @returns True if the line appears to be a transition
+ *
+ * @example
+ * ```typescript
+ * isTransition('CUT TO:', false)              // true
+ * isTransition('FADE TO BLACK:', false)       // true
+ * isTransition('DISSOLVE TO:', false)         // true
+ * isTransition('John walked to the door', false) // false
+ * ```
  */
 function isTransition(line: string, strictMode: boolean): boolean {
   // Check against known transition patterns
@@ -446,6 +490,22 @@ function isTransition(line: string, strictMode: boolean): boolean {
 
 /**
  * Determines if a line is a page number.
+ * 
+ * Page numbers can appear in various formats in screenplays such as:
+ * - Simple number: "1", "25"
+ * - Numbered format: "1.", "(1)", "[1]"
+ * - Page notation: "Page 1 of 100"
+ *
+ * @param line - The line to test
+ * @returns True if the line appears to be a page number
+ *
+ * @example
+ * ```typescript
+ * isPageNumber('1')              // true
+ * isPageNumber('42.')            // true
+ * isPageNumber('Page 5 of 120')  // true
+ * isPageNumber('INT. ROOM')      // false
+ * ```
  */
 function isPageNumber(line: string): boolean {
   // Check if line is just a number (possibly with dots)
@@ -468,6 +528,24 @@ function isPageNumber(line: string): boolean {
 
 /**
  * Parses title page lines into key-value pairs.
+ * 
+ * Extracts common screenplay title page fields such as title, author, credit,
+ * source, draft, date, and contact information from a collection of lines.
+ *
+ * @param lines - Array of lines from the title page
+ * @returns Object with title page fields and their values
+ *
+ * @example
+ * ```typescript
+ * const titlePage = parseTitlePage([
+ *   'My Script',
+ *   'Title: My Script',
+ *   'Author: John Doe',
+ *   'Draft: First Draft',
+ * ]);
+ * console.log(titlePage.title);  // 'My Script'
+ * console.log(titlePage.author); // 'John Doe'
+ * ```
  */
 function parseTitlePage(lines: string[]): Record<string, string> {
   const titlePage: Record<string, string> = {};
