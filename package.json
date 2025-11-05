@@ -2,9 +2,26 @@
   "name": "scripter",
   "version": "0.1.0",
   "description": "Convert PDF screenplays to .foutain format",
-  "main": "index.js",
+  "type": "module",
+  "main": "./dist/lib/index.js",
+  "types": "./dist/lib/index.d.ts",
+  "bin": {
+    "scripter": "./dist/cli/index.js"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/lib/index.js",
+      "types": "./dist/lib/index.d.ts"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "test": "vitest",
+    "test:watch": "vitest --watch",
+    "lint": "eslint src --ext .ts",
+    "format": "prettier --write \"src/**/*.ts\""
   },
   "author": "Kenneth Matovu",
   "license": "ISC",
