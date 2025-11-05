@@ -4,6 +4,7 @@ import { Command } from 'commander';
 import { readFileSync } from 'fs';
 import { dirname, join } from 'path';
 import { fileURLToPath } from 'url';
+import { batchCommand } from './commands/batch.js';
 import { convertCommand } from './commands/convert.js';
 
 // Get the directory of the current file for reading package.json
@@ -30,5 +31,17 @@ program
   .option('--strict', 'Enable strict parsing mode')
   .option('--no-metadata', 'Exclude conversion metadata')
   .action(convertCommand);
+
+program
+  .command('batch <pattern>')
+  .description('Convert multiple PDF files to Fountain format')
+  .argument('<pattern>', 'Glob pattern for PDF files (e.g., "scripts/*.pdf")')
+  .option('-o, --output-dir <dir>', 'Output directory (default: current directory)')
+  .option('--continue-on-error', 'Continue processing if a file fails')
+  .option('--no-scene-detection', 'Disable automatic scene heading detection')
+  .option('--no-character-detection', 'Disable automatic character name detection')
+  .option('--strict', 'Enable strict parsing mode')
+  .option('--no-metadata', 'Exclude conversion metadata')
+  .action(batchCommand);
 
 program.parse();
