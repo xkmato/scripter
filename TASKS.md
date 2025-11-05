@@ -1450,6 +1450,8 @@ Create example scripts demonstrating various use cases.
 **Estimated Time:** 15 minutes  
 **Dependencies:** None
 
+**Status:** Completed ✅
+
 **Description:**  
 Add appropriate license file to the project.
 
