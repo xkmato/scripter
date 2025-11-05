@@ -167,10 +167,7 @@ Set up code quality and formatting tools to maintain consistent code style.
       "sourceType": "module"
     },
     "rules": {
-      "@typescript-eslint/no-unused-vars": [
-        "error",
-        { "argsIgnorePattern": "^_" }
-      ],
+      "@typescript-eslint/no-unused-vars": ["error", { "argsIgnorePattern": "^_" }],
       "@typescript-eslint/explicit-function-return-type": "warn"
     }
   }
@@ -221,17 +218,17 @@ Create comprehensive type definitions for the library's data structures and API.
   ```typescript
   export interface FountainElement {
     type:
-      | "scene_heading"
-      | "action"
-      | "character"
-      | "dialogue"
-      | "parenthetical"
-      | "transition"
-      | "page_break"
-      | "note"
-      | "section"
-      | "synopsis"
-      | "title_page";
+      | 'scene_heading'
+      | 'action'
+      | 'character'
+      | 'dialogue'
+      | 'parenthetical'
+      | 'transition'
+      | 'page_break'
+      | 'note'
+      | 'section'
+      | 'synopsis'
+      | 'title_page';
     text: string;
     metadata?: Record<string, unknown>;
   }
@@ -308,9 +305,9 @@ Create a module to extract text content from PDF files while preserving structur
 - Implementation outline:
 
   ```typescript
-  import fs from "fs/promises";
-  import pdfParse from "pdf-parse";
-  import type { PDFContent, PDFPage } from "../types/pdf.js";
+  import fs from 'fs/promises';
+  import pdfParse from 'pdf-parse';
+  import type { PDFContent, PDFPage } from '../types/pdf.js';
 
   export async function readPDF(filePath: string): Promise<PDFContent> {
     // Read file buffer
@@ -362,10 +359,10 @@ Create a module to convert structured screenplay elements into valid Fountain fo
 - Implementation outline:
 
   ```typescript
-  import type { FountainDocument, FountainElement } from "../types/fountain.js";
+  import type { FountainDocument, FountainElement } from '../types/fountain.js';
 
   export function generateFountain(document: FountainDocument): string {
-    let output = "";
+    let output = '';
 
     // Add title page if present
     if (document.titlePage) {
@@ -462,13 +459,10 @@ Create the main API that orchestrates the conversion process from PDF to Fountai
 - Create `src/lib/converter.ts`:
 
   ```typescript
-  import { readPDF } from "./pdf-reader.js";
-  import { parseScreenplay } from "./screenplay-parser.js";
-  import { generateFountain } from "./fountain-generator.js";
-  import type {
-    ConversionOptions,
-    ConversionResult,
-  } from "../types/fountain.js";
+  import { readPDF } from './pdf-reader.js';
+  import { parseScreenplay } from './screenplay-parser.js';
+  import { generateFountain } from './fountain-generator.js';
+  import type { ConversionOptions, ConversionResult } from '../types/fountain.js';
 
   export async function convertPDFToFountain(
     pdfPath: string,
@@ -501,12 +495,12 @@ Create the main API that orchestrates the conversion process from PDF to Fountai
 
 - Create `src/lib/index.ts` as main library export:
   ```typescript
-  export { convertPDFToFountain } from "./converter.js";
-  export { generateFountain } from "./fountain-generator.js";
-  export { readPDF } from "./pdf-reader.js";
-  export { parseScreenplay } from "./screenplay-parser.js";
-  export * from "../types/fountain.js";
-  export * from "../types/pdf.js";
+  export { convertPDFToFountain } from './converter.js';
+  export { generateFountain } from './fountain-generator.js';
+  export { readPDF } from './pdf-reader.js';
+  export { parseScreenplay } from './screenplay-parser.js';
+  export * from '../types/fountain.js';
+  export * from '../types/pdf.js';
   ```
 
 **Acceptance Criteria:**
@@ -533,25 +527,19 @@ Create utility functions for writing Fountain content to files.
 - Create `src/utils/file-writer.ts`:
 
   ```typescript
-  import fs from "fs/promises";
-  import path from "path";
+  import fs from 'fs/promises';
+  import path from 'path';
 
-  export async function writeFountainFile(
-    outputPath: string,
-    content: string
-  ): Promise<void> {
+  export async function writeFountainFile(outputPath: string, content: string): Promise<void> {
     // Ensure directory exists
     const dir = path.dirname(outputPath);
     await fs.mkdir(dir, { recursive: true });
 
     // Write file with UTF-8 encoding
-    await fs.writeFile(outputPath, content, "utf-8");
+    await fs.writeFile(outputPath, content, 'utf-8');
   }
 
-  export function generateOutputPath(
-    inputPath: string,
-    outputDir?: string
-  ): string {
+  export function generateOutputPath(inputPath: string, outputDir?: string): string {
     const basename = path.basename(inputPath, path.extname(inputPath));
     const outputName = `${basename}.fountain`;
     return outputDir ? path.join(outputDir, outputName) : outputName;
@@ -584,33 +572,24 @@ Implement the command-line interface using Commander.js with a clean user experi
 
   ```typescript
   #!/usr/bin/env node
-  import { Command } from "commander";
-  import { convertCommand } from "./commands/convert.js";
-  import {
-    version,
-    description,
-  } from "../../package.json" assert { type: "json" };
+  import { Command } from 'commander';
+  import { convertCommand } from './commands/convert.js';
+  import { version, description } from '../../package.json' assert { type: 'json' };
 
   const program = new Command();
 
-  program.name("scripter").description(description).version(version);
+  program.name('scripter').description(description).version(version);
 
   program
-    .command("convert")
-    .description("Convert PDF screenplay to Fountain format")
-    .argument("<input>", "Path to input PDF file")
-    .option(
-      "-o, --output <path>",
-      "Output file path (default: same name with .fountain extension)"
-    )
-    .option("-d, --output-dir <dir>", "Output directory")
-    .option("--no-scene-detection", "Disable automatic scene heading detection")
-    .option(
-      "--no-character-detection",
-      "Disable automatic character name detection"
-    )
-    .option("--strict", "Enable strict parsing mode")
-    .option("--no-metadata", "Exclude conversion metadata")
+    .command('convert')
+    .description('Convert PDF screenplay to Fountain format')
+    .argument('<input>', 'Path to input PDF file')
+    .option('-o, --output <path>', 'Output file path (default: same name with .fountain extension)')
+    .option('-d, --output-dir <dir>', 'Output directory')
+    .option('--no-scene-detection', 'Disable automatic scene heading detection')
+    .option('--no-character-detection', 'Disable automatic character name detection')
+    .option('--strict', 'Enable strict parsing mode')
+    .option('--no-metadata', 'Exclude conversion metadata')
     .action(convertCommand);
 
   program.parse();
@@ -643,15 +622,12 @@ Implement the main convert command with progress feedback and error handling.
 - Create `src/cli/commands/convert.ts`:
 
   ```typescript
-  import chalk from "chalk";
-  import ora from "ora";
-  import { convertPDFToFountain } from "../../lib/converter.js";
-  import { generateFountain } from "../../lib/fountain-generator.js";
-  import {
-    writeFountainFile,
-    generateOutputPath,
-  } from "../../utils/file-writer.js";
-  import type { ConversionOptions } from "../../types/fountain.js";
+  import chalk from 'chalk';
+  import ora from 'ora';
+  import { convertPDFToFountain } from '../../lib/converter.js';
+  import { generateFountain } from '../../lib/fountain-generator.js';
+  import { writeFountainFile, generateOutputPath } from '../../utils/file-writer.js';
+  import type { ConversionOptions } from '../../types/fountain.js';
 
   interface ConvertOptions {
     output?: string;
@@ -662,11 +638,8 @@ Implement the main convert command with progress feedback and error handling.
     metadata: boolean;
   }
 
-  export async function convertCommand(
-    input: string,
-    options: ConvertOptions
-  ): Promise<void> {
-    const spinner = ora("Reading PDF...").start();
+  export async function convertCommand(input: string, options: ConvertOptions): Promise<void> {
+    const spinner = ora('Reading PDF...').start();
 
     try {
       // Build conversion options
@@ -678,39 +651,36 @@ Implement the main convert command with progress feedback and error handling.
       };
 
       // Convert
-      spinner.text = "Converting to Fountain format...";
+      spinner.text = 'Converting to Fountain format...';
       const result = await convertPDFToFountain(input, conversionOptions);
 
       if (!result.success) {
-        spinner.fail("Conversion failed");
-        console.error(chalk.red("Errors:"));
+        spinner.fail('Conversion failed');
+        console.error(chalk.red('Errors:'));
         result.errors?.forEach((err) => console.error(chalk.red(`  - ${err}`)));
         process.exit(1);
       }
 
       // Generate output
-      spinner.text = "Generating Fountain file...";
+      spinner.text = 'Generating Fountain file...';
       const fountainText = generateFountain(result.document!);
 
       // Determine output path
-      const outputPath =
-        options.output || generateOutputPath(input, options.outputDir);
+      const outputPath = options.output || generateOutputPath(input, options.outputDir);
 
       // Write file
-      spinner.text = "Writing file...";
+      spinner.text = 'Writing file...';
       await writeFountainFile(outputPath, fountainText);
 
       spinner.succeed(chalk.green(`Converted successfully: ${outputPath}`));
 
       // Display warnings if any
       if (result.warnings && result.warnings.length > 0) {
-        console.log(chalk.yellow("\nWarnings:"));
-        result.warnings.forEach((warn) =>
-          console.log(chalk.yellow(`  - ${warn}`))
-        );
+        console.log(chalk.yellow('\nWarnings:'));
+        result.warnings.forEach((warn) => console.log(chalk.yellow(`  - ${warn}`)));
       }
     } catch (error) {
-      spinner.fail("Conversion failed");
+      spinner.fail('Conversion failed');
       console.error(chalk.red(error.message));
       process.exit(1);
     }
@@ -750,15 +720,11 @@ Add ability to convert multiple PDF files at once using glob patterns.
 
   ```typescript
   program
-    .command("batch")
-    .description("Convert multiple PDF files to Fountain format")
-    .argument("<pattern>", 'Glob pattern for PDF files (e.g., "scripts/*.pdf")')
-    .option(
-      "-o, --output-dir <dir>",
-      "Output directory (required)",
-      process.cwd()
-    )
-    .option("--continue-on-error", "Continue processing if a file fails")
+    .command('batch')
+    .description('Convert multiple PDF files to Fountain format')
+    .argument('<pattern>', 'Glob pattern for PDF files (e.g., "scripts/*.pdf")')
+    .option('-o, --output-dir <dir>', 'Output directory (required)', process.cwd())
+    .option('--continue-on-error', 'Continue processing if a file fails')
     .action(batchCommand);
   ```
 
@@ -842,28 +808,28 @@ Create comprehensive unit tests for the PDF reading functionality.
 - Create `tests/unit/pdf-reader.test.ts`:
 
   ```typescript
-  import { describe, it, expect } from "vitest";
-  import { readPDF } from "../../src/lib/pdf-reader.js";
-  import path from "path";
+  import { describe, it, expect } from 'vitest';
+  import { readPDF } from '../../src/lib/pdf-reader.js';
+  import path from 'path';
 
-  describe("PDF Reader", () => {
-    it("should read a valid PDF file", async () => {
-      const pdfPath = path.join(__dirname, "../fixtures/pdfs/simple-scene.pdf");
+  describe('PDF Reader', () => {
+    it('should read a valid PDF file', async () => {
+      const pdfPath = path.join(__dirname, '../fixtures/pdfs/simple-scene.pdf');
       const result = await readPDF(pdfPath);
 
       expect(result.text).toBeDefined();
       expect(result.pages.length).toBeGreaterThan(0);
     });
 
-    it("should throw error for non-existent file", async () => {
-      await expect(readPDF("nonexistent.pdf")).rejects.toThrow();
+    it('should throw error for non-existent file', async () => {
+      await expect(readPDF('nonexistent.pdf')).rejects.toThrow();
     });
 
-    it("should extract text preserving line breaks", async () => {
+    it('should extract text preserving line breaks', async () => {
       // Test that text structure is preserved
     });
 
-    it("should handle empty PDFs", async () => {
+    it('should handle empty PDFs', async () => {
       // Test empty PDF handling
     });
   });
@@ -901,54 +867,54 @@ Create comprehensive unit tests for screenplay parsing logic.
 - Create `tests/unit/screenplay-parser.test.ts`:
 
   ```typescript
-  import { describe, it, expect } from "vitest";
-  import { parseScreenplay } from "../../src/lib/screenplay-parser.js";
-  import type { PDFContent } from "../../src/types/pdf.js";
+  import { describe, it, expect } from 'vitest';
+  import { parseScreenplay } from '../../src/lib/screenplay-parser.js';
+  import type { PDFContent } from '../../src/types/pdf.js';
 
-  describe("Screenplay Parser", () => {
-    describe("Scene Heading Detection", () => {
-      it("should detect INT. scene headings", () => {
+  describe('Screenplay Parser', () => {
+    describe('Scene Heading Detection', () => {
+      it('should detect INT. scene headings', () => {
         const content: PDFContent = {
-          text: "INT. COFFEE SHOP - DAY",
+          text: 'INT. COFFEE SHOP - DAY',
           pages: [
             {
               pageNumber: 1,
-              text: "INT. COFFEE SHOP - DAY",
-              lines: ["INT. COFFEE SHOP - DAY"],
+              text: 'INT. COFFEE SHOP - DAY',
+              lines: ['INT. COFFEE SHOP - DAY'],
             },
           ],
         };
         const result = parseScreenplay(content, {});
 
-        expect(result.elements[0].type).toBe("scene_heading");
-        expect(result.elements[0].text).toBe("INT. COFFEE SHOP - DAY");
+        expect(result.elements[0].type).toBe('scene_heading');
+        expect(result.elements[0].text).toBe('INT. COFFEE SHOP - DAY');
       });
 
-      it("should detect EXT. scene headings", () => {
+      it('should detect EXT. scene headings', () => {
         // Similar test for EXT.
       });
 
-      it("should detect INT./EXT. scene headings", () => {
+      it('should detect INT./EXT. scene headings', () => {
         // Test combined scene headings
       });
     });
 
-    describe("Character Name Detection", () => {
-      it("should detect all-caps character names", () => {
+    describe('Character Name Detection', () => {
+      it('should detect all-caps character names', () => {
         // Test character detection
       });
 
-      it("should not confuse action with character names", () => {
+      it('should not confuse action with character names', () => {
         // Test that all-caps action isn't misidentified
       });
     });
 
-    describe("Dialogue Detection", () => {
-      it("should associate dialogue with preceding character", () => {
+    describe('Dialogue Detection', () => {
+      it('should associate dialogue with preceding character', () => {
         // Test dialogue grouping
       });
 
-      it("should detect parentheticals within dialogue", () => {
+      it('should detect parentheticals within dialogue', () => {
         // Test parenthetical handling
       });
     });
@@ -991,28 +957,25 @@ Create unit tests to verify Fountain format output is correct and spec-compliant
 - Create `tests/unit/fountain-generator.test.ts`:
 
   ```typescript
-  import { describe, it, expect } from "vitest";
-  import { generateFountain } from "../../src/lib/fountain-generator.js";
-  import type {
-    FountainDocument,
-    FountainElement,
-  } from "../../src/types/fountain.js";
+  import { describe, it, expect } from 'vitest';
+  import { generateFountain } from '../../src/lib/fountain-generator.js';
+  import type { FountainDocument, FountainElement } from '../../src/types/fountain.js';
 
-  describe("Fountain Generator", () => {
-    it("should format scene headings correctly", () => {
+  describe('Fountain Generator', () => {
+    it('should format scene headings correctly', () => {
       const doc: FountainDocument = {
-        elements: [{ type: "scene_heading", text: "INT. ROOM - DAY" }],
+        elements: [{ type: 'scene_heading', text: 'INT. ROOM - DAY' }],
       };
 
       const result = generateFountain(doc);
-      expect(result).toContain("INT. ROOM - DAY");
+      expect(result).toContain('INT. ROOM - DAY');
     });
 
-    it("should format character and dialogue correctly", () => {
+    it('should format character and dialogue correctly', () => {
       const doc: FountainDocument = {
         elements: [
-          { type: "character", text: "JOHN" },
-          { type: "dialogue", text: "Hello, world!" },
+          { type: 'character', text: 'JOHN' },
+          { type: 'dialogue', text: 'Hello, world!' },
         ],
       };
 
@@ -1020,7 +983,7 @@ Create unit tests to verify Fountain format output is correct and spec-compliant
       expect(result).toMatch(/JOHN\s+Hello, world!/);
     });
 
-    it("should include proper spacing between elements", () => {
+    it('should include proper spacing between elements', () => {
       // Test blank line insertion
     });
 
@@ -1063,46 +1026,41 @@ Create end-to-end integration tests that verify the complete conversion pipeline
 - Create `tests/integration/converter.test.ts`:
 
   ```typescript
-  import { describe, it, expect } from "vitest";
-  import { convertPDFToFountain } from "../../src/lib/converter.js";
-  import { generateFountain } from "../../src/lib/fountain-generator.js";
-  import fs from "fs/promises";
-  import path from "path";
+  import { describe, it, expect } from 'vitest';
+  import { convertPDFToFountain } from '../../src/lib/converter.js';
+  import { generateFountain } from '../../src/lib/fountain-generator.js';
+  import fs from 'fs/promises';
+  import path from 'path';
 
-  describe("PDF to Fountain Conversion", () => {
-    it("should convert a simple screenplay PDF", async () => {
-      const pdfPath = path.join(__dirname, "../fixtures/pdfs/simple-scene.pdf");
-      const expectedPath = path.join(
-        __dirname,
-        "../fixtures/expected/simple-scene.fountain"
-      );
+  describe('PDF to Fountain Conversion', () => {
+    it('should convert a simple screenplay PDF', async () => {
+      const pdfPath = path.join(__dirname, '../fixtures/pdfs/simple-scene.pdf');
+      const expectedPath = path.join(__dirname, '../fixtures/expected/simple-scene.fountain');
 
       const result = await convertPDFToFountain(pdfPath);
       expect(result.success).toBe(true);
 
       const fountainText = generateFountain(result.document!);
-      const expected = await fs.readFile(expectedPath, "utf-8");
+      const expected = await fs.readFile(expectedPath, 'utf-8');
 
       // Compare outputs (may need fuzzy matching for whitespace)
-      expect(normalizeWhitespace(fountainText)).toBe(
-        normalizeWhitespace(expected)
-      );
+      expect(normalizeWhitespace(fountainText)).toBe(normalizeWhitespace(expected));
     });
 
-    it("should convert a full screenplay with all elements", async () => {
+    it('should convert a full screenplay with all elements', async () => {
       // Test with more complex screenplay
     });
 
-    it("should handle edge cases gracefully", async () => {
+    it('should handle edge cases gracefully', async () => {
       // Test with edge-cases.pdf
     });
 
-    it("should respect conversion options", async () => {
+    it('should respect conversion options', async () => {
       // Test that options affect output
     });
 
-    it("should return errors for invalid PDFs", async () => {
-      const result = await convertPDFToFountain("invalid.pdf");
+    it('should return errors for invalid PDFs', async () => {
+      const result = await convertPDFToFountain('invalid.pdf');
       expect(result.success).toBe(false);
       expect(result.errors).toBeDefined();
     });
@@ -1142,16 +1100,16 @@ Create tests for CLI commands to verify user-facing functionality.
 - Create `tests/integration/cli.test.ts`:
 
   ```typescript
-  import { describe, it, expect, beforeEach, afterEach } from "vitest";
-  import { exec } from "child_process";
-  import { promisify } from "util";
-  import fs from "fs/promises";
-  import path from "path";
+  import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+  import { exec } from 'child_process';
+  import { promisify } from 'util';
+  import fs from 'fs/promises';
+  import path from 'path';
 
   const execAsync = promisify(exec);
 
-  describe("CLI Commands", () => {
-    const testOutputDir = path.join(__dirname, "../temp");
+  describe('CLI Commands', () => {
+    const testOutputDir = path.join(__dirname, '../temp');
 
     beforeEach(async () => {
       await fs.mkdir(testOutputDir, { recursive: true });
@@ -1161,27 +1119,22 @@ Create tests for CLI commands to verify user-facing functionality.
       await fs.rm(testOutputDir, { recursive: true, force: true });
     });
 
-    it("should display help text", async () => {
-      const { stdout } = await execAsync("node dist/cli/index.js --help");
-      expect(stdout).toContain("scripter");
-      expect(stdout).toContain("convert");
+    it('should display help text', async () => {
+      const { stdout } = await execAsync('node dist/cli/index.js --help');
+      expect(stdout).toContain('scripter');
+      expect(stdout).toContain('convert');
     });
 
-    it("should display version", async () => {
-      const { stdout } = await execAsync("node dist/cli/index.js --version");
+    it('should display version', async () => {
+      const { stdout } = await execAsync('node dist/cli/index.js --version');
       expect(stdout).toMatch(/\d+\.\d+\.\d+/);
     });
 
-    it("should convert PDF via CLI", async () => {
-      const inputPath = path.join(
-        __dirname,
-        "../fixtures/pdfs/simple-scene.pdf"
-      );
-      const outputPath = path.join(testOutputDir, "output.fountain");
+    it('should convert PDF via CLI', async () => {
+      const inputPath = path.join(__dirname, '../fixtures/pdfs/simple-scene.pdf');
+      const outputPath = path.join(testOutputDir, 'output.fountain');
 
-      await execAsync(
-        `node dist/cli/index.js convert "${inputPath}" -o "${outputPath}"`
-      );
+      await execAsync(`node dist/cli/index.js convert "${inputPath}" -o "${outputPath}"`);
 
       const fileExists = await fs
         .access(outputPath)
@@ -1189,14 +1142,14 @@ Create tests for CLI commands to verify user-facing functionality.
         .catch(() => false);
       expect(fileExists).toBe(true);
 
-      const content = await fs.readFile(outputPath, "utf-8");
-      expect(content).toContain("INT."); // Basic validation
+      const content = await fs.readFile(outputPath, 'utf-8');
+      expect(content).toContain('INT.'); // Basic validation
     });
 
-    it("should handle errors gracefully", async () => {
+    it('should handle errors gracefully', async () => {
       try {
-        await execAsync("node dist/cli/index.js convert nonexistent.pdf");
-        expect.fail("Should have thrown error");
+        await execAsync('node dist/cli/index.js convert nonexistent.pdf');
+        expect.fail('Should have thrown error');
       } catch (error) {
         expect(error.code).toBe(1);
       }
@@ -1236,22 +1189,16 @@ Configure Vitest for optimal testing experience with coverage reporting.
 - Create `vitest.config.ts`:
 
   ```typescript
-  import { defineConfig } from "vitest/config";
+  import { defineConfig } from 'vitest/config';
 
   export default defineConfig({
     test: {
       globals: true,
-      environment: "node",
+      environment: 'node',
       coverage: {
-        provider: "v8",
-        reporter: ["text", "json", "html"],
-        exclude: [
-          "node_modules/",
-          "dist/",
-          "tests/",
-          "**/*.test.ts",
-          "**/*.config.ts",
-        ],
+        provider: 'v8',
+        reporter: ['text', 'json', 'html'],
+        exclude: ['node_modules/', 'dist/', 'tests/', '**/*.test.ts', '**/*.config.ts'],
         thresholds: {
           lines: 80,
           functions: 80,
@@ -1259,7 +1206,7 @@ Configure Vitest for optimal testing experience with coverage reporting.
           statements: 80,
         },
       },
-      include: ["tests/**/*.test.ts"],
+      include: ['tests/**/*.test.ts'],
     },
   });
   ```
@@ -1735,7 +1682,7 @@ Automate testing and building with GitHub Actions.
           uses: actions/setup-node@v3
           with:
             node-version: ${{ matrix.node-version }}
-            cache: "npm"
+            cache: 'npm'
 
         - run: npm ci
         - run: npm run build
@@ -1775,7 +1722,7 @@ Automate npm publishing on version tags.
   on:
     push:
       tags:
-        - "v*"
+        - 'v*'
 
   jobs:
     publish:
@@ -1786,8 +1733,8 @@ Automate npm publishing on version tags.
 
         - uses: actions/setup-node@v3
           with:
-            node-version: "20.x"
-            registry-url: "https://registry.npmjs.org"
+            node-version: '20.x'
+            registry-url: 'https://registry.npmjs.org'
 
         - run: npm ci
         - run: npm run build
