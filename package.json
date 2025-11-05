@@ -1,0 +1,15 @@
+{
+  "name": "scripter",
+  "version": "0.1.0",
+  "description": "Convert PDF screenplays to .foutain format",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kenneth Matovu",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^24.10.0",
+    "typescript": "^5.9.3"
+  }
+}
