@@ -1,13 +1,29 @@
-// Main library entry point
-export * from '../types/fountain.js';
-export * from '../types/pdf.js';
+/**
+ * Scripter: PDF to Fountain Converter Library
+ *
+ * Main entry point for the scripter library providing both programmatic API
+ * and type definitions for converting PDF screenplays to Fountain format.
+ *
+ * @example
+ * ```typescript
+ * import { convertPDFToFountain } from 'scripter';
+ *
+ * const result = await convertPDFToFountain('screenplay.pdf');
+ * if (result.success) {
+ *   console.log('Conversion successful');
+ * }
+ * ```
+ */
+
+// Main conversion API
+export { convertPDFToFountain } from './converter.js';
+
+// Library components
 export { generateFountain } from './fountain-generator.js';
 export { readPDF } from './pdf-reader.js';
 export { parseScreenplay } from './screenplay-parser.js';
 
-export const version = '0.1.0';
+// Type definitions
+export * from '../types/fountain.js';
+export * from '../types/pdf.js';
 
-// Placeholder for main converter - will be implemented in Task 2.5
-export function convertPDFToFountain(_pdfPath: string): Promise<unknown> {
-  throw new Error('Not implemented yet');
-}
