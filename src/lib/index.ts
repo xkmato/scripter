@@ -3,6 +3,7 @@ export * from '../types/fountain.js';
 export * from '../types/pdf.js';
 export { generateFountain } from './fountain-generator.js';
 export { readPDF } from './pdf-reader.js';
+export { parseScreenplay } from './screenplay-parser.js';
 
 export const version = '0.1.0';
 
