@@ -1,17 +1,6 @@
 import fs from 'fs/promises';
-import { createRequire } from 'module';
+import { PDFParse } from 'pdf-parse';
 import type { PDFContent, PDFPage } from '../types/pdf.js';
-
-// Import pdf-parse using require for CommonJS compatibility
-const require = createRequire(import.meta.url);
-const pdfParse = require('pdf-parse') as (
-  dataBuffer: Buffer
-) => Promise<{
-  text: string;
-  numpages: number;
-  info: Record<string, unknown>;
-  metadata: Record<string, unknown>;
-}>;
 
 /**
  * Reads and parses a PDF file, extracting text content while preserving structure.
@@ -31,18 +20,25 @@ const pdfParse = require('pdf-parse') as (
  * ```
  */
 export async function readPDF(filePath: string): Promise<PDFContent> {
+  let parser: PDFParse | undefined;
+
   try {
     // Read the PDF file as a buffer
     const dataBuffer = await fs.readFile(filePath);
 
-    // Parse the PDF
-    const pdfData = await pdfParse(dataBuffer);
+    // Create parser with the buffer
+    parser = new PDFParse({ data: dataBuffer });
+
+    // Get text content
+    const textResult = await parser.getText();
+
+    // Get document info
+    const infoResult = await parser.getInfo();
 
     // Extract metadata
     const metadata: Record<string, unknown> = {};
-    if (pdfData.info) {
-      // Copy relevant metadata fields
-      const info = pdfData.info as Record<string, unknown>;
+    if (infoResult.info) {
+      const info = infoResult.info;
       if (info.Title) metadata.title = info.Title;
       if (info.Author) metadata.author = info.Author;
       if (info.Subject) metadata.subject = info.Subject;
@@ -53,10 +49,10 @@ export async function readPDF(filePath: string): Promise<PDFContent> {
     }
 
     // Structure the text into pages
-    const pages = await parsePages(pdfData);
+    const pages = parsePages(textResult.text, textResult.total);
 
     const result: PDFContent = {
-      text: pdfData.text,
+      text: textResult.text,
       pages,
     };
 
@@ -71,7 +67,7 @@ export async function readPDF(filePath: string): Promise<PDFContent> {
       if (error.message.includes('ENOENT')) {
         throw new Error(`PDF file not found: ${filePath}`);
       }
-      if (error.message.includes('password')) {
+      if (error.message.includes('password') || error.message.includes('Password')) {
         throw new Error(`PDF is password-protected and cannot be read: ${filePath}`);
       }
       if (error.message.includes('Invalid PDF')) {
@@ -81,21 +77,27 @@ export async function readPDF(filePath: string): Promise<PDFContent> {
       throw new Error(`Failed to read PDF file: ${error.message}`);
     }
     throw error;
+  } finally {
+    // Always clean up
+    if (parser) {
+      await parser.destroy();
+    }
   }
 }
 
 /**
- * Parses the PDF data into structured pages with line information.
+ * Parses the PDF text into structured pages with line information.
  *
- * @param pdfData - Raw PDF data from pdf-parse
+ * @param text - Full text from pdf-parse
+ * @param _totalPages - Total number of pages (unused but kept for potential future use)
  * @returns Array of structured PDF pages
  */
-async function parsePages(pdfData: { text: string }): Promise<PDFPage[]> {
+function parsePages(text: string, _totalPages: number): PDFPage[] {
   const pages: PDFPage[] = [];
 
-  // pdf-parse provides full text but not per-page text directly
+  // pdf-parse v2 provides full text but not per-page text directly
   // We'll split by form feed characters which typically indicate page breaks
-  const pageTexts = pdfData.text.split('\f');
+  const pageTexts = text.split('\f');
 
   for (let i = 0; i < pageTexts.length; i++) {
     const pageText = pageTexts[i];
@@ -116,11 +118,11 @@ async function parsePages(pdfData: { text: string }): Promise<PDFPage[]> {
   }
 
   // If no form feed characters were found, treat the entire document as one page
-  if (pages.length === 0 && pdfData.text.trim()) {
-    const lines = pdfData.text.split('\n').map((line: string) => line.trimEnd());
+  if (pages.length === 0 && text.trim()) {
+    const lines = text.split('\n').map((line: string) => line.trimEnd());
     pages.push({
       pageNumber: 1,
-      text: pdfData.text,
+      text: text,
       lines,
     });
   }
