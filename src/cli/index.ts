@@ -21,7 +21,7 @@ program
   .version(packageJson.version);
 
 program
-  .command('convert <input>')
+  .command('convert')
   .description('Convert PDF screenplay to Fountain format')
   .argument('<input>', 'Path to input PDF file')
   .option('-o, --output <path>', 'Output file path (default: same name with .fountain extension)')
@@ -33,7 +33,7 @@ program
   .action(convertCommand);
 
 program
-  .command('batch <pattern>')
+  .command('batch')
   .description('Convert multiple PDF files to Fountain format')
   .argument('<pattern>', 'Glob pattern for PDF files (e.g., "scripts/*.pdf")')
   .option('-o, --output-dir <dir>', 'Output directory (default: current directory)')
